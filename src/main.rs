@@ -2,6 +2,7 @@ extern crate clap;
 use clap::{App, Arg};
 use std::fs::create_dir;
 use std::path::Path;
+use std::process;
 
 fn main() {
     let matches = App::new("rGit")
@@ -39,26 +40,30 @@ fn init_path(path: &str) {
     let passed_path = Path::new(path);
 
     if !passed_path.exists() {
-        panic!("Path {} doesn't exist", path);
+        eprintln!("Path {} doesn't exist", path);
+        process::exit(1);
     }
 
     if !passed_path.is_dir() {
-        panic!("{} is not a directory", path);
+        eprintln!("{} is not a directory", path);
+        process::exit(1);
     }
 
     let root_buf = passed_path.join(".git");
     let root = root_buf.as_path();
 
     if root.exists() {
-        panic!("{} already has been initialised", path);
+        eprintln!("{} already has been initialised", path);
+        process::exit(1);
     }
 
     match create_dir(root) {
         Err(err) => {
-            panic!(
+            eprintln!(
                 "Error creating structure in {} due to the following error: {}",
                 path, err
             );
+            process::exit(1);
         }
         Ok(_) => {}
     }
@@ -72,7 +77,8 @@ fn create_init_paths(root: &Path) {
         let dir_path = root.join(dir);
         match create_dir(dir_path) {
             Err(err) => {
-                panic!("Error creating {:?}, due to {}", dir, err);
+                eprintln!("Error creating {:?}, due to {}", dir, err);
+                process::exit(1);
             }
             Ok(_) => {}
         }
