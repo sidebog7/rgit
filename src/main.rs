@@ -15,15 +15,18 @@ fn main() {
         )
         .get_matches();
 
-    if let Some(sub_com) = matches.subcommand_matches("init") {
-        let mut paths: Vec<&str> = Vec::new();
-        if let Some(path_params) = sub_com.values_of("path") {
-            for path in path_params {
-                paths.push(path);
+    match matches.subcommand() {
+        ("init", Some(sub_com)) => {
+            let mut paths: Vec<&str> = Vec::new();
+            if let Some(path_params) = sub_com.values_of("path") {
+                for path in path_params {
+                    paths.push(path);
+                }
+            } else {
+                paths.push(".");
             }
-        } else {
-            paths.push(".");
+            init::init(paths);
         }
-        init::init(paths);
+        _ => {}
     }
 }
